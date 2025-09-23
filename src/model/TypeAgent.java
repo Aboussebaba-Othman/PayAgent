@@ -1,4 +1,9 @@
 package model;
 
-public class TypeAgent {
+public enum TypeAgent {
+    OUVRIER,
+    RESPONSABLE_DEPARTEMENT,
+    DIRECTEUR,
+    STAGIAIRE
 }
+

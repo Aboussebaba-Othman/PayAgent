@@ -8,8 +8,23 @@ public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/PayAgent";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
+    private static DatabaseConnection instance;
+    private Connection connection;
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    private DatabaseConnection() throws SQLException {
+        try {
+            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (SQLException e) {
+            throw new SQLException("Erreur de connexion à la base de données", e);
+        }
+    }
+    public static DatabaseConnection getInstance() throws SQLException {
+        if (instance == null || instance.getConnection().isClosed()) {
+            instance = new DatabaseConnection();
+        }
+        return instance;
+    }
+    public Connection getConnection() {
+        return connection;
     }
 }

@@ -1,4 +1,8 @@
 package model;
 
-public class TypePaiment {
+public enum TypePaiment {
+    SALAIRE,
+    PRIME,
+    Bonus,
+    INDEMNITE
 }
