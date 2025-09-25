@@ -7,7 +7,7 @@ import model.TypeAgent;
 import java.util.List;
 import java.util.Optional;
 
-public interface AgentRepository extends IGenericRepository<Agent, String> {
+public interface IAgentRepository extends IGenericRepository<Agent, String> {
 
     List<Agent> findByTypeAgent(TypeAgent typeAgent);
     List<Agent> findByDepartement(Departement departement);
