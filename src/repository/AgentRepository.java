@@ -44,7 +44,7 @@ public class AgentRepository implements IAgentRepository {
 
     @Override
     public boolean existsByEmail(String email) {
-        return false;
+        return agents.stream().anyMatch(agent -> agent.getEmail().equalsIgnoreCase(email));
     }
 
     @Override

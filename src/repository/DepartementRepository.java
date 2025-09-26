@@ -15,17 +15,17 @@ public class DepartementRepository implements IDepartementRepository {
 
     @Override
     public Optional<Departement> findByNom(String nom) {
-        return departements.stream().filter(departement -> departement.getNom().equals(nom)).findFirst();
+        return departements.stream().filter(dept -> dept.getNom().equalsIgnoreCase(nom)).findFirst();
     }
 
     @Override
     public List<Departement> findByResponsableNotNull() {
-        return List.of();
+        return departements.stream().filter(departement -> departement.getResponsable() != null).collect(Collectors.toList());
     }
 
     @Override
     public List<Departement> findByResponsableIsNull() {
-        return List.of();
+        return departements.stream().filter(departement -> departement.getResponsable() == null).collect(Collectors.toList());
     }
 
     @Override
@@ -35,22 +35,25 @@ public class DepartementRepository implements IDepartementRepository {
 
     @Override
     public boolean existsByNom(String nom) {
-        return false;
+        return departements.stream().anyMatch(dep->dep.getNom().equalsIgnoreCase(nom));
     }
 
     @Override
-    public void save(Departement entity) {
-
+    public void save(Departement departement) {
+        if (departement == null){
+            throw new IllegalArgumentException("departement ne peut pas etre null");
+        }
+        departements.add(departement);
+        System.out.println("departement saved");
     }
 
     @Override
-    public Optional<Departement> findById(String s) {
-        return Optional.empty();
-    }
+    public Optional<Departement> findById(String id) {
+        return departements.stream().filter(dept -> dept.getIdDepartement().equals(id)).findFirst();    }
 
     @Override
     public List<Departement> findAll() {
-        return List.of();
+        return new ArrayList<>(departements);
     }
 
     @Override
@@ -59,17 +62,17 @@ public class DepartementRepository implements IDepartementRepository {
     }
 
     @Override
-    public boolean deleteById(String s) {
-        return false;
+    public boolean deleteById(String id) {
+        return departements.removeIf(dep->dep.getIdDepartement().equals(id));
     }
 
     @Override
-    public boolean existsById(String s) {
-        return false;
+    public boolean existsById(String id) {
+        return departements.stream().anyMatch(dep->dep.getIdDepartement().equals(id));
     }
 
     @Override
     public long count() {
-        return 0;
+        return departements.size();
     }
 }
