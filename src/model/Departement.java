@@ -14,20 +14,6 @@ public class Departement {
         this.nom = nom;
     }
 
-    public void ajouterAgent(Agent agent) {
-        agents.add(agent);
-        agent.setDepartement(this);
-    }
-
-    public void supprimerAgent(Agent agent) {
-        agents.remove(agent);
-        agent.setDepartement(null);
-    }
-
-    public void affecterResponsable(Agent agent) {
-        this.responsable = agent;
-    }
-
     public String getIdDepartement() { return idDepartement; }
     public void setIdDepartement(String idDepartement) { this.idDepartement = idDepartement; }
 
