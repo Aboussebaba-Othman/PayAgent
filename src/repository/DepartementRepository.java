@@ -61,6 +61,7 @@ public class DepartementRepository implements IDepartementRepository {
 
     }
 
+
     @Override
     public boolean deleteById(String id) {
         return departements.removeIf(dep->dep.getIdDepartement().equals(id));
