@@ -9,12 +9,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class DepartementRepository implements IDepartementRepository {
 
     private final Connection connection;
-    private final List<Departement> departements = new ArrayList<>();
 
     public DepartementRepository() {
         try {
@@ -126,29 +124,70 @@ public class DepartementRepository implements IDepartementRepository {
     }
     @Override
     public List<Departement> findAll() {
-        return new ArrayList<>(departements);
+        List<Departement> list = new ArrayList<>();
+        String sql = "SELECT * FROM departement";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(mapResultSetToDepartement(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur findAll: " + e.getMessage());
+        }
+        return list;
     }
 
     @Override
     public void update(Departement entity) {
-
+        String sql = "UPDATE departement SET nom = ?, responsable_id = ? WHERE id_departement = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, entity.getNom());
+            stmt.setString(2, entity.getResponsable() != null ? entity.getResponsable().getId() : null);
+            stmt.setString(3, entity.getIdDepartement());
+            stmt.executeUpdate();
+            System.out.println("departement mis à jour: " + entity.getNom());
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur update departement: " + e.getMessage());
+        }
     }
 
 
     @Override
     public boolean deleteById(String id) {
-        return departements.removeIf(dep->dep.getIdDepartement().equals(id));
+        String sql = "DELETE FROM departement WHERE id_departement = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur deleteById: " + e.getMessage());
+        }
     }
 
     @Override
     public boolean existsById(String id) {
-        return departements.stream().anyMatch(dep->dep.getIdDepartement().equals(id));
+        String sql = "SELECT COUNT(*) FROM departement WHERE id_departement = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur existsById: " + e.getMessage());
+        }
+        return false;
     }
 
     @Override
     public long count() {
-        return departements.size();
+        String sql = "SELECT COUNT(*) FROM departement";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getLong(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur count: " + e.getMessage());
+        }
+        return 0;
     }
+
     private  Departement mapResultSetToDepartement(ResultSet rs) throws SQLException {
         return new Departement(
                 rs.getString("idDepartement"),
