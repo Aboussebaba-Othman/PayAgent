@@ -9,6 +9,7 @@ import service.interfaces.IAgentService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class AgentServiceImpl implements IAgentService {
 
@@ -21,18 +22,15 @@ public class AgentServiceImpl implements IAgentService {
 
 
     @Override
-    public Agent creerAgent(String nom, String prenom, String email, String motDePasse,
-                            TypeAgent typeAgent, String departementId) {
+    public Agent creerAgent(String nom, String prenom, String email, String motDePasse, TypeAgent typeAgent, String departementId) {
 
-
-        long count = agentRepository.count();
-        String agentId = "AG" + (count + 1);
+        long timestamp = System.currentTimeMillis();
+        String randomPart = UUID.randomUUID().toString().substring(0, 6);
+        String agentId = "AG" + timestamp + "-" + randomPart;
 
         Agent agent = new Agent(agentId, nom, prenom, email, motDePasse, typeAgent, null);
 
         agentRepository.save(agent);
-
-        System.out.println("Agent saved: " + agent.getNomComplet());
         return agent;
     }
 

@@ -98,15 +98,13 @@ public class DepartementRepository implements IDepartementRepository {
     @Override
     public void save(Departement departement) {
         String sql = "INSERT INTO departement (id_departement, nom, responsable_id) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, departement.getIdDepartement());
             stmt.setString(2, departement.getNom());
             stmt.setString(3, departement.getResponsable() != null ? departement.getResponsable().getId() : null);
-
-            stmt.executeQuery();
-            System.out.println("Nouvel departement créé :" + departement.getNom());
-        }catch (SQLException e){
-            throw new RuntimeException("Erreur de saved departement" + e.getMessage());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur save departement: " + e.getMessage());
         }
     }
 
@@ -145,7 +143,6 @@ public class DepartementRepository implements IDepartementRepository {
             stmt.setString(2, entity.getResponsable() != null ? entity.getResponsable().getId() : null);
             stmt.setString(3, entity.getIdDepartement());
             stmt.executeUpdate();
-            System.out.println("departement mis à jour: " + entity.getNom());
         } catch (SQLException e) {
             throw new RuntimeException("Erreur update departement: " + e.getMessage());
         }
@@ -190,7 +187,7 @@ public class DepartementRepository implements IDepartementRepository {
 
     private  Departement mapResultSetToDepartement(ResultSet rs) throws SQLException {
         return new Departement(
-                rs.getString("idDepartement"),
+                rs.getString("id_departement"),
                 rs.getString("nom")
         );
     }

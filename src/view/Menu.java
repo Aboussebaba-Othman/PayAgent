@@ -1,36 +1,64 @@
 package view;
 
 import controller.AgentController;
+import controller.DepartementController;
 import model.Agent;
 import model.TypeAgent;
 import repository.AgentRepositoryImpl;
+import repository.DepartementRepository;
 import service.AgentServiceImpl;
+import service.DepartementServiceImpl;
 import service.interfaces.IAgentService;
+import service.interfaces.IDepartementService;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
 
-    private final AgentController controller;
+    private final AgentController agentController;
+    private final DepartementController departementController;
     private final Scanner scanner = new Scanner(System.in);
 
     public Menu() {
-        // Fixed: proper dependency injection
-        IAgentService service = new AgentServiceImpl(new AgentRepositoryImpl());
-        this.controller = new AgentController(service);
+        IAgentService agentService = new AgentServiceImpl(new AgentRepositoryImpl());
+        IDepartementService departementService = new DepartementServiceImpl(new DepartementRepository(), new AgentRepositoryImpl());
+
+        this.agentController = new AgentController(agentService);
+        this.departementController = new DepartementController(departementService);
     }
 
     public void start() {
         int choix;
         do {
-            System.out.println("\n=== MENU GESTION AGENTS ===");
+            System.out.println("\n=== MENU PRINCIPAL ===");
+            System.out.println("1. Gestion des agents");
+            System.out.println("2. Gestion des départements");
+            System.out.println("0. Quitter");
+            System.out.print("Choix: ");
+            choix = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choix) {
+                case 1 -> menuAgents();
+                case 2 -> menuDepartements();
+                case 0 -> System.out.println("Fin du programme");
+                default -> System.out.println("Choix invalide !");
+            }
+        } while (choix != 0);
+    }
+
+    // ===== MENU AGENTS =====
+    private void menuAgents() {
+        int choix;
+        do {
+            System.out.println("\n--- Gestion des agents ---");
             System.out.println("1. Créer un agent");
             System.out.println("2. Modifier un agent");
             System.out.println("3. Supprimer un agent");
             System.out.println("4. Trouver un agent par ID");
             System.out.println("5. Lister tous les agents");
-            System.out.println("0. Quitter");
+            System.out.println("0. Retour");
             System.out.print("Choix: ");
             choix = scanner.nextInt();
             scanner.nextLine();
@@ -41,8 +69,8 @@ public class Menu {
                 case 3 -> supprimerAgent();
                 case 4 -> trouverAgent();
                 case 5 -> listerAgents();
-                case 0 -> System.out.println("👋 Fin du programme");
-                default -> System.out.println("⚠️ Choix invalide !");
+                case 0 -> {}
+                default -> System.out.println("Choix invalide !");
             }
         } while (choix != 0);
     }
@@ -60,13 +88,10 @@ public class Menu {
             System.out.print("Type (OUVRIER, RESPONSABLE_DEPARTEMENT, DIRECTEUR, STAGIAIRE): ");
             String type = scanner.nextLine();
 
-            Agent agent = controller.creerAgent(nom, prenom, email, motDePasse,
+            agentController.creerAgent(nom, prenom, email, motDePasse,
                     TypeAgent.valueOf(type.toUpperCase()), null);
-            System.out.println("✅ Agent créé: " + agent.getNomComplet());
-        } catch (IllegalArgumentException e) {
-            System.out.println("⚠️ Type d'agent invalide: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("⚠️ Erreur lors de la création: " + e.getMessage());
+            System.out.println("Erreur lors de la création: " + e.getMessage());
         }
     }
 
@@ -81,24 +106,23 @@ public class Menu {
             System.out.print("Nouvel email: ");
             String email = scanner.nextLine();
 
-            Agent agent = controller.modifierAgent(id, nom, prenom, email);
-            System.out.println("✅ Agent modifié: " + agent.getNomComplet());
+            agentController.modifierAgent(id, nom, prenom, email);
         } catch (Exception e) {
-            System.out.println("⚠️ Erreur lors de la modification: " + e.getMessage());
+            System.out.println("Erreur lors de la modification: " + e.getMessage());
         }
     }
 
     private void supprimerAgent() {
         System.out.print("ID de l'agent à supprimer: ");
         String id = scanner.nextLine();
-        boolean deleted = controller.supprimerAgent(id);
+        boolean deleted = agentController.supprimerAgent(id);
         System.out.println(deleted ? "Agent supprimé" : "Agent introuvable");
     }
 
     private void trouverAgent() {
         System.out.print("ID de l'agent à chercher: ");
         String id = scanner.nextLine();
-        controller.trouverAgent(id).ifPresentOrElse(
+        agentController.trouverAgent(id).ifPresentOrElse(
                 a -> System.out.println("Agent trouvé: " + a.getNomComplet() + " | " + a.getEmail()),
                 () -> System.out.println("Aucun agent trouvé avec cet ID")
         );
@@ -106,7 +130,7 @@ public class Menu {
 
     private void listerAgents() {
         System.out.println("\n--- Liste des agents ---");
-        List<Agent> agents = controller.listerTousLesAgents();
+        List<Agent> agents = agentController.listerTousLesAgents();
         if (agents.isEmpty()) {
             System.out.println("Aucun agent trouvé.");
         } else {
@@ -114,5 +138,101 @@ public class Menu {
                     System.out.println(agent.getId() + " | " + agent.getNomComplet() + " | " + agent.getEmail())
             );
         }
+    }
+
+    // ===== MENU DEPARTEMENTS =====
+    private void menuDepartements() {
+        int choix;
+        do {
+            System.out.println("\n--- Gestion des départements ---");
+            System.out.println("1. Créer un département");
+            System.out.println("2. Modifier un département");
+            System.out.println("3. Supprimer un département");
+            System.out.println("4. Trouver un département par ID");
+            System.out.println("5. Lister tous les départements");
+            System.out.println("6. Affecter un responsable");
+            System.out.println("7. Ajouter un agent à un département");
+            System.out.println("8. Retirer un agent d’un département");
+            System.out.println("0. Retour");
+            System.out.print("Choix: ");
+            choix = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choix) {
+                case 1 -> creerDepartement();
+                case 2 -> modifierDepartement();
+                case 3 -> supprimerDepartement();
+                case 4 -> trouverDepartement();
+                case 5 -> listerDepartements();
+                case 6 -> affecterResponsable();
+                case 7 -> ajouterAgentAuDepartement();
+                case 8 -> retirerAgentDuDepartement();
+                case 0 -> {}
+                default -> System.out.println("Choix invalide !");
+            }
+        } while (choix != 0);
+    }
+
+    private void creerDepartement() {
+        System.out.print("Nom du département: ");
+        String nom = scanner.nextLine();
+        departementController.creerDepartement(nom);
+    }
+
+    private void modifierDepartement() {
+        System.out.print("ID du département: ");
+        String id = scanner.nextLine();
+        System.out.print("Nouveau nom: ");
+        String nom = scanner.nextLine();
+        departementController.modifierDepartement(id, nom);
+    }
+
+    private void supprimerDepartement() {
+        System.out.print("ID du département: ");
+        String id = scanner.nextLine();
+        departementController.supprimerDepartement(id);
+    }
+
+    private void trouverDepartement() {
+        System.out.print("ID du département: ");
+        String id = scanner.nextLine();
+        departementController.trouverDepartement(id).ifPresentOrElse(
+                d -> System.out.println("Département trouvé: " + d.getIdDepartement() + " | " + d.getNom()),
+                () -> System.out.println("Aucun département trouvé avec cet ID")
+        );
+    }
+
+    private void listerDepartements() {
+        System.out.println("\n--- Liste des départements ---");
+        var depts = departementController.listerTousLesDepartements();
+        if (depts.isEmpty()) {
+            System.out.println("Aucun département trouvé.");
+        } else {
+            depts.forEach(d -> System.out.println(d.getIdDepartement() + " | " + d.getNom()));
+        }
+    }
+
+    private void affecterResponsable() {
+        System.out.print("ID du département: ");
+        String deptId = scanner.nextLine();
+        System.out.print("ID de l’agent responsable: ");
+        String agentId = scanner.nextLine();
+        departementController.affecterResponsable(deptId, agentId);
+    }
+
+    private void ajouterAgentAuDepartement() {
+        System.out.print("ID du département: ");
+        String deptId = scanner.nextLine();
+        System.out.print("ID de l’agent: ");
+        String agentId = scanner.nextLine();
+        departementController.ajouterAgentAuDepartement(deptId, agentId);
+    }
+
+    private void retirerAgentDuDepartement() {
+        System.out.print("ID du département: ");
+        String deptId = scanner.nextLine();
+        System.out.print("ID de l’agent: ");
+        String agentId = scanner.nextLine();
+        departementController.retirerAgentDuDepartement(deptId, agentId);
     }
 }

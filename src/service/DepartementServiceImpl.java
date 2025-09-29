@@ -62,7 +62,21 @@ public class DepartementServiceImpl implements IDepartementService {
 
     @Override
     public boolean ajouterAgentAuDepartement(String departementId, String agentId) {
-        return false;
+        Optional<Departement> deptOpt = departementRepository.findById(departementId);
+        Optional<Agent> agentOpt = agentRepository.findById(agentId);
+
+        if (deptOpt.isEmpty() || agentOpt.isEmpty()) {
+            return false;
+        }
+
+        Agent agent = agentOpt.get();
+        Departement dept = deptOpt.get();
+
+        agent.setDepartement(dept);
+        agentRepository.update(agent);
+
+        System.out.println("Agent " + agent.getNomComplet() + " ajouté au département " + dept.getNom());
+        return true;
     }
 
     @Override
@@ -72,7 +86,17 @@ public class DepartementServiceImpl implements IDepartementService {
 
     @Override
     public boolean affecterResponsable(String departementId, String agentId) {
-        return false;
+        Departement dept = departementRepository.findById(departementId)
+                .orElseThrow(() -> new IllegalArgumentException("Département non trouvé"));
+
+        Agent agent = agentRepository.findById(agentId)
+                .orElseThrow(() -> new IllegalArgumentException("Agent non trouvé"));
+
+        dept.setResponsable(agent);
+        departementRepository.update(dept);
+
+        System.out.println(agent.getNomComplet() + " est maintenant responsable du département " + dept.getNom());
+        return true;
     }
 
     @Override
