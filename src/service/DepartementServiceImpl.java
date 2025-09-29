@@ -2,6 +2,7 @@ package service;
 
 import model.Agent;
 import model.Departement;
+import model.TypeAgent;
 import repository.AgentRepositoryImpl;
 import repository.DepartementRepository;
 import service.interfaces.IDepartementService;
@@ -92,12 +93,22 @@ public class DepartementServiceImpl implements IDepartementService {
         Agent agent = agentRepository.findById(agentId)
                 .orElseThrow(() -> new IllegalArgumentException("Agent non trouvé"));
 
+        if (agent.getTypeAgent() != TypeAgent.RESPONSABLE_DEPARTEMENT) {
+            throw new IllegalArgumentException("Seul un agent de type RESPONSABLE_DEPARTEMENT peut être responsable");
+        }
+
+        if (dept.getResponsable() != null) {
+            throw new IllegalStateException("Ce département a déjà un responsable: "
+                    + dept.getResponsable().getNomComplet());
+        }
+
         dept.setResponsable(agent);
         departementRepository.update(dept);
 
         System.out.println(agent.getNomComplet() + " est maintenant responsable du département " + dept.getNom());
         return true;
     }
+
 
     @Override
     public double calculerTotalPaiementsDepartement(String departementId) {
