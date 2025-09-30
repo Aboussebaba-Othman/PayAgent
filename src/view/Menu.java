@@ -21,8 +21,11 @@ public class Menu {
     private final Scanner scanner = new Scanner(System.in);
 
     public Menu() {
-        IAgentService agentService = new AgentServiceImpl(new AgentRepositoryImpl());
-        IDepartementService departementService = new DepartementServiceImpl(new DepartementRepository(), new AgentRepositoryImpl());
+        AgentRepositoryImpl agentRepository = new AgentRepositoryImpl();
+        DepartementRepository departementRepository = new DepartementRepository();
+
+        IAgentService agentService = new AgentServiceImpl(agentRepository, departementRepository);
+        IDepartementService departementService = new DepartementServiceImpl(departementRepository, agentRepository);
 
         this.agentController = new AgentController(agentService);
         this.departementController = new DepartementController(departementService);
@@ -58,6 +61,9 @@ public class Menu {
             System.out.println("3. Supprimer un agent");
             System.out.println("4. Trouver un agent par ID");
             System.out.println("5. Lister tous les agents");
+            System.out.println("6. Lister les agents par departement");
+            System.out.println("7. Lister Les Agents par Type");
+            System.out.println("8. Rechercher Agents par Nom");
             System.out.println("0. Retour");
             System.out.print("Choix: ");
             choix = scanner.nextInt();
@@ -69,6 +75,9 @@ public class Menu {
                 case 3 -> supprimerAgent();
                 case 4 -> trouverAgent();
                 case 5 -> listerAgents();
+                case 6 -> listerAgentsParDepartement();
+                case 7 -> listerAgentsParType();
+                case 8 -> rechercherAgentsParNom();
                 case 0 -> {}
                 default -> System.out.println("Choix invalide !");
             }
@@ -140,7 +149,51 @@ public class Menu {
         }
     }
 
-    // ===== MENU DEPARTEMENTS =====
+    private void listerAgentsParDepartement() {
+        System.out.print("ID du département: ");
+        String deptId = scanner.nextLine();
+
+        var agents = agentController.listerAgentsParDepartement(deptId);
+        if (agents.isEmpty()) {
+            System.out.println("Aucun agent trouvé dans ce département.");
+        } else {
+            System.out.println("--- Agents du département ---");
+            agents.forEach(a -> System.out.println(a.getId() + "  ||  " + a.getNomComplet()));
+        }
+    }
+
+    private void listerAgentsParType() {
+        System.out.print("Type d'agent (OUVRIER, RESPONSABLE_DEPARTEMENT, DIRECTEUR, STAGIAIRE): ");
+        String type = scanner.nextLine();
+
+        try {
+            var agents = agentController.listerAgentsParType(TypeAgent.valueOf(type.toUpperCase()));
+            if (agents.isEmpty()) {
+                System.out.println("Aucun agent trouvé pour ce type.");
+            } else {
+                System.out.println("--- Agents du type " + type.toUpperCase() + " ---");
+                agents.forEach(a -> System.out.println(a.getId() + " | " + a.getNomComplet()));
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Type invalide !");
+        }
+    }
+
+    private void rechercherAgentsParNom() {
+        System.out.print("Nom à rechercher: ");
+        String nom = scanner.nextLine();
+
+        var agents = agentController.rechercherAgentsParNom(nom);
+        if (agents.isEmpty()) {
+            System.out.println("Aucun agent trouvé avec ce nom.");
+        } else {
+            System.out.println("--- Résultats de recherche ---");
+            agents.forEach(a -> System.out.println(a.getId() + "  ||  " + a.getNomComplet()));
+        }
+    }
+
+
+
     private void menuDepartements() {
         int choix;
         do {

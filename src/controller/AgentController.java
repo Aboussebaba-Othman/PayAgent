@@ -17,13 +17,13 @@ public class AgentController {
         this.agentService = agentService;
     }
 
-    public Agent creerAgent(String nom, String prenom, String email, String motDePasse,
-                            TypeAgent typeAgent, String departementId) {
-        return agentService.creerAgent(nom, prenom, email, motDePasse, typeAgent, departementId);
+    public void creerAgent(String nom, String prenom, String email, String motDePasse,
+                           TypeAgent typeAgent, String departementId) {
+        agentService.creerAgent(nom, prenom, email, motDePasse, typeAgent, departementId);
     }
 
-    public Agent modifierAgent(String agentId, String nom, String prenom, String email) {
-        return agentService.modifierAgent(agentId, nom, prenom, email);
+    public void modifierAgent(String agentId, String nom, String prenom, String email) {
+        agentService.modifierAgent(agentId, nom, prenom, email);
     }
 
     public boolean supprimerAgent(String agentId) {

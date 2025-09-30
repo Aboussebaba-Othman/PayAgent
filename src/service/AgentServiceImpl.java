@@ -5,6 +5,7 @@ import model.Paiment;
 import model.TypeAgent;
 import model.TypePaiment;
 import repository.AgentRepositoryImpl;
+import repository.DepartementRepository;
 import service.interfaces.IAgentService;
 
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class AgentServiceImpl implements IAgentService {
 
     private final AgentRepositoryImpl agentRepository;
+    private final DepartementRepository departementRepository;
 
-    public AgentServiceImpl(AgentRepositoryImpl agentRepository) {
+    public AgentServiceImpl(AgentRepositoryImpl agentRepository, DepartementRepository departementRepository) {
         this.agentRepository = agentRepository;
+        this.departementRepository = departementRepository;
     }
 
 
@@ -97,17 +100,30 @@ public class AgentServiceImpl implements IAgentService {
 
     @Override
     public List<Agent> rechercherAgentsParNom(String nom) {
-        return List.of();
+        if (nom == null || nom.trim().isEmpty()) {
+            return List.of();
+        }
+        return agentRepository.findByNomContaining(nom.trim());
     }
 
     @Override
     public List<Agent> listerAgentsParType(TypeAgent type) {
-        return List.of();
+        if (type == null) {
+            return List.of();
+        }
+        return agentRepository.findByTypeAgent(type);
     }
 
     @Override
     public List<Agent> listerAgentsParDepartement(String departementId) {
-        return List.of();
+        if (departementId == null || departementId.trim().isEmpty()) {
+            return List.of();
+        }
+
+        return departementRepository.findById(departementId)
+                .map(agentRepository::findByDepartement)
+                .orElse(List.of());
     }
+
 
 }

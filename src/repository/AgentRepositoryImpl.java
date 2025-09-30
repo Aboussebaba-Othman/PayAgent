@@ -161,7 +161,7 @@ public class AgentRepositoryImpl implements IAgentRepository {
     }
 
     @Override
-    public List<Agent> findByNomContaining(String nom) {
+    public List<Agent> findByNomContaining(String nom ) {
         List<Agent> agents = new ArrayList<>();
         String sql = "SELECT * FROM agent WHERE LOWER(nom) LIKE ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
