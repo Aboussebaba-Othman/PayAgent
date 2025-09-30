@@ -82,9 +82,46 @@ public class DepartementServiceImpl implements IDepartementService {
 
     @Override
     public boolean retirerAgentDuDepartement(String departementId, String agentId) {
-        return false;
-    }
+        if (departementId == null || departementId.trim().isEmpty()) {
+            System.out.println("ID du département invalide");
+            return false;
+        }
 
+        if (agentId == null || agentId.trim().isEmpty()) {
+            System.out.println("ID de l'agent invalide");
+            return false;
+        }
+
+        Optional<Departement> deptOpt = departementRepository.findById(departementId);
+        if (deptOpt.isEmpty()) {
+            System.out.println("Département non trouvé avec l'ID: " + departementId);
+            return false;
+        }
+
+        Optional<Agent> agentOpt = agentRepository.findById(agentId);
+        if (agentOpt.isEmpty()) {
+            System.out.println("Agent non trouvé avec l'ID: " + agentId);
+            return false;
+        }
+
+        Agent agent = agentOpt.get();
+        Departement dept = deptOpt.get();
+
+        List<Agent> agentsDuDept = agentRepository.findByDepartement(dept);
+        boolean appartientAuDept = agentsDuDept.stream()
+                .anyMatch(a -> a.getId().equals(agentId));
+
+        if (!appartientAuDept) {
+            System.out.println("L'agent " + agent.getNomComplet() + " n'appartient pas au département " + dept.getNom());
+            return false;
+        }
+
+        agent.setDepartement(null);
+        agentRepository.update(agent);
+
+        System.out.println("Agent " + agent.getNomComplet() + " retiré du département " + dept.getNom());
+        return true;
+    }
     @Override
     public boolean affecterResponsable(String departementId, String agentId) {
         Departement dept = departementRepository.findById(departementId)
