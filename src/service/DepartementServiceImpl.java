@@ -147,20 +147,6 @@ public class DepartementServiceImpl implements IDepartementService {
     }
 
 
-    @Override
-    public double calculerTotalPaiementsDepartement(String departementId) {
-        return 0;
-    }
-
-    @Override
-    public double calculerSalaireMoyenDepartement(String departementId) {
-        return 0;
-    }
-
-    @Override
-    public List<Agent> classementAgentsParPaiements(String departementId) {
-        return List.of();
-    }
 
     @Override
     public Optional<Departement> rechercherParNom(String nom) {

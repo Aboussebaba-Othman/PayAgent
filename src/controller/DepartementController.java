@@ -45,18 +45,6 @@ public class DepartementController {
         return departementService.affecterResponsable(departementId, agentId);
     }
 
-    public double calculerTotalPaiementsDepartement(String departementId) {
-        return departementService.calculerTotalPaiementsDepartement(departementId);
-    }
-
-    public double calculerSalaireMoyenDepartement(String departementId) {
-        return departementService.calculerSalaireMoyenDepartement(departementId);
-    }
-
-    public List<Agent> classementAgentsParPaiements(String departementId) {
-        return departementService.classementAgentsParPaiements(departementId);
-    }
-
     public Optional<Departement> rechercherParNom(String nom) {
         return departementService.rechercherParNom(nom);
     }

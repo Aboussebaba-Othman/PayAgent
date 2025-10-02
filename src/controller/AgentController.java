@@ -40,22 +40,20 @@ public class AgentController {
 
     // ====== PAIEMENTS ======
 
-    public boolean ajouterPaiement(String agentId, TypePaiment type, double montant,
-                                   String motif, boolean conditionValidee) {
-        return agentService.ajouterPaiement(agentId, type, montant, motif, conditionValidee);
-    }
+//    public boolean ajouterPaiement(String agentId, TypePaiment type, double montant,
+//                                   String motif, boolean conditionValidee) {
+//        return agentService.ajouterPaiement(agentId, type, montant, motif, conditionValidee);
+//    }
+//
+//    public List<Paiment> consulterHistoriquePaiements(String agentId) {
+//        return agentService.consulterHistoriquePaiements(agentId);
+//    }
+//
+//    public List<Paiment> filtrerPaiementsParType(String agentId, TypePaiment type) {
+//        return agentService.filtrerPaiementsParType(agentId, type);
+//    }
 
-    public List<Paiment> consulterHistoriquePaiements(String agentId) {
-        return agentService.consulterHistoriquePaiements(agentId);
-    }
 
-    public List<Paiment> filtrerPaiementsParType(String agentId, TypePaiment type) {
-        return agentService.filtrerPaiementsParType(agentId, type);
-    }
-
-    public double calculerTotalPaiements(String agentId) {
-        return agentService.calculerTotalPaiements(agentId);
-    }
 
     // ====== FILTRAGE ET RECHERCHE ======
 

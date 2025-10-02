@@ -25,7 +25,7 @@ public class AgentServiceImpl implements IAgentService {
 
 
     @Override
-    public Agent creerAgent(String nom, String prenom, String email, String motDePasse, TypeAgent typeAgent, String departementId) {
+    public void creerAgent(String nom, String prenom, String email, String motDePasse, TypeAgent typeAgent, String departementId) {
 
         long timestamp = System.currentTimeMillis();
         String randomPart = UUID.randomUUID().toString().substring(0, 6);
@@ -34,11 +34,10 @@ public class AgentServiceImpl implements IAgentService {
         Agent agent = new Agent(agentId, nom, prenom, email, motDePasse, typeAgent, null);
 
         agentRepository.save(agent);
-        return agent;
     }
 
     @Override
-    public Agent modifierAgent(String agentId, String nom, String prenom, String email) {
+    public void modifierAgent(String agentId, String nom, String prenom, String email) {
         Optional<Agent> agentOpt = agentRepository.findById(agentId);
 
         if (agentOpt.isEmpty()) {
@@ -54,7 +53,6 @@ public class AgentServiceImpl implements IAgentService {
         agentRepository.update(agent);
 
         System.out.println("Agent update: " + agent.getNomComplet());
-        return agent;
     }
 
     @Override
@@ -76,26 +74,6 @@ public class AgentServiceImpl implements IAgentService {
     @Override
     public List<Agent> listerTousLesAgents() {
         return agentRepository.findAll();
-    }
-
-    @Override
-    public boolean ajouterPaiement(String agentId, TypePaiment type, double montant, String motif, boolean conditionValidee) {
-        return false;
-    }
-
-    @Override
-    public List<Paiment> consulterHistoriquePaiements(String agentId) {
-        return List.of();
-    }
-
-    @Override
-    public List<Paiment> filtrerPaiementsParType(String agentId, TypePaiment type) {
-        return List.of();
-    }
-
-    @Override
-    public double calculerTotalPaiements(String agentId) {
-        return 0;
     }
 
     @Override
