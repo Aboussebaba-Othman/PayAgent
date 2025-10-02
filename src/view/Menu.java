@@ -2,14 +2,18 @@ package view;
 
 import controller.AgentController;
 import controller.DepartementController;
+import controller.PaiementController;
 import model.Agent;
 import model.TypeAgent;
 import repository.AgentRepositoryImpl;
 import repository.DepartementRepository;
+import repository.PaiementRepository;
 import service.AgentServiceImpl;
 import service.DepartementServiceImpl;
+import service.PaiementServiceImpl;
 import service.interfaces.IAgentService;
 import service.interfaces.IDepartementService;
+import service.interfaces.IPaiementService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -19,16 +23,20 @@ public class Menu {
     private final AgentController agentController;
     private final DepartementController departementController;
     private final Scanner scanner = new Scanner(System.in);
+    private final PaiementController paiementController;
 
     public Menu() {
         AgentRepositoryImpl agentRepository = new AgentRepositoryImpl();
         DepartementRepository departementRepository = new DepartementRepository();
+        PaiementRepository paiementRepository = new PaiementRepository();
 
         IAgentService agentService = new AgentServiceImpl(agentRepository, departementRepository);
         IDepartementService departementService = new DepartementServiceImpl(departementRepository, agentRepository);
+        IPaiementService paiementService = new PaiementServiceImpl(paiementRepository, agentRepository, departementRepository);
 
         this.agentController = new AgentController(agentService);
         this.departementController = new DepartementController(departementService);
+        this.paiementController = new PaiementController(paiementService);
     }
 
     public void start() {

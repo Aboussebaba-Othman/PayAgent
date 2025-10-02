@@ -22,11 +22,10 @@ public interface IPaiementService {
     List<Paiment> filtrerPaiementsParDate(LocalDate date);
     List<Paiment> filtrerPaiementsEntreDates(LocalDate debut, LocalDate fin);
     List<Paiment> filtrerPaiementsParMontantSuperieur(double montant);
-    // Statistiques
+    // ===== STATISTIQUES =====
     double calculerTotalPaiementsDepartement(String departementId);
     double calculerSalaireMoyenDepartement(String departementId);
     List<Agent> classementAgentsParPaiements(String departementId);
-    // ===== STATISTIQUES =====
     double calculerTotalPaiementsAgent(String agentId);
     long compterPaiementsParType(TypePaiment type);
     Optional<Paiment> paiementMaxParAgent(String agentId);
