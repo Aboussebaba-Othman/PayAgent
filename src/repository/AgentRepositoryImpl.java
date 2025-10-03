@@ -14,10 +14,12 @@ import java.util.Optional;
 public class AgentRepositoryImpl implements IAgentRepository {
 
     private final Connection connection;
+    private final DepartementRepository departementRepository;
 
     public AgentRepositoryImpl() {
         try {
             this.connection = DatabaseConnection.getInstance().getConnection();
+            this.departementRepository = new DepartementRepository();
         } catch (SQLException e) {
             throw new RuntimeException("Erreur connexion DB: " + e.getMessage());
         }
@@ -37,9 +39,9 @@ public class AgentRepositoryImpl implements IAgentRepository {
             stmt.setString(7, agent.getDepartement() != null ? agent.getDepartement().getIdDepartement() : null);
 
             stmt.executeUpdate();
-            System.out.println("Nouvel agent inséré: " + agent.getNom() + " " + agent.getPrenom());
+            System.out.println("Nouvel agent insere: " + agent.getNom() + " " + agent.getPrenom());
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new RuntimeException("Email ou ID déjà existant: " + e.getMessage());
+            throw new RuntimeException("Email ou ID deja existant: " + e.getMessage());
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors de la sauvegarde de l'agent: " + e.getMessage());
         }
@@ -86,12 +88,12 @@ public class AgentRepositoryImpl implements IAgentRepository {
 
             int rows = stmt.executeUpdate();
             if (rows == 0) {
-                System.out.println("Aucun agent trouvé avec l'ID: " + agent.getId());
+                System.out.println("Aucun agent trouve avec l'ID: " + agent.getId());
             } else {
-                System.out.println("Agent mis à jour: " + agent.getNom() + " " + agent.getPrenom());
+                System.out.println("Agent mis a jour: " + agent.getNom() + " " + agent.getPrenom());
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la mise à jour de l'agent: " + e.getMessage());
+            throw new RuntimeException("Erreur lors de la mise a jour de l'agent: " + e.getMessage());
         }
     }
 
@@ -161,7 +163,7 @@ public class AgentRepositoryImpl implements IAgentRepository {
     }
 
     @Override
-    public List<Agent> findByNomContaining(String nom ) {
+    public List<Agent> findByNomContaining(String nom) {
         List<Agent> agents = new ArrayList<>();
         String sql = "SELECT * FROM agent WHERE LOWER(nom) LIKE ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -205,6 +207,13 @@ public class AgentRepositoryImpl implements IAgentRepository {
     }
 
     private Agent mapResultSetToAgent(ResultSet rs) throws SQLException {
+        String departementId = rs.getString("departement_id");
+        Departement departement = null;
+
+        if (departementId != null && !departementId.trim().isEmpty()) {
+            departement = departementRepository.findById(departementId).orElse(null);
+        }
+
         return new Agent(
                 rs.getString("id"),
                 rs.getString("nom"),
@@ -212,7 +221,7 @@ public class AgentRepositoryImpl implements IAgentRepository {
                 rs.getString("email"),
                 rs.getString("mot_de_passe"),
                 TypeAgent.valueOf(rs.getString("type_agent")),
-                null
+                departement
         );
     }
 }

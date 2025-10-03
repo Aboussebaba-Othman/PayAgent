@@ -37,10 +37,11 @@ public class AuthServiceImpl implements IAuthService {
 
         Agent agent = agentOpt.get();
 
-        if (!agent.getMotDePasse().equals(motDePasse)) {
-            System.out.println("mot de passe incorrect");
+        if (!agent.getMotDePasse().trim().equalsIgnoreCase(motDePasse.trim())) {
+            System.out.println("Mot de passe incorrect");
             return Optional.empty();
         }
+
 
         this.agentConnecte = agent;
         System.out.println("Connexion Bien! Bienvenue " + agent.getNomComplet());

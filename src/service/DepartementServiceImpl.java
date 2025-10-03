@@ -9,6 +9,7 @@ import service.interfaces.IDepartementService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 public class DepartementServiceImpl implements IDepartementService {
@@ -23,8 +24,12 @@ public class DepartementServiceImpl implements IDepartementService {
 
     @Override
     public Departement creerDepartement(String nom) {
-        long count = departementRepository.count();
-        String id = "DEP" + (count + 1);
+
+        long timestamp = System.currentTimeMillis();
+        String randomPart = UUID.randomUUID().toString().substring(0, 6);
+        String id = "DEP" + timestamp + "-" + randomPart;
+
+
         Departement dept = new Departement(id, nom);
         departementRepository.save(dept);
         System.out.println("Département créé: " + nom);
@@ -141,6 +146,9 @@ public class DepartementServiceImpl implements IDepartementService {
 
         dept.setResponsable(agent);
         departementRepository.update(dept);
+
+        agent.setDepartement(dept);
+        agentRepository.update(agent);
 
         System.out.println(agent.getNomComplet() + " est maintenant responsable du département " + dept.getNom());
         return true;

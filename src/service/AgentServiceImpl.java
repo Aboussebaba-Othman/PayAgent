@@ -1,9 +1,6 @@
 package service;
 
-import model.Agent;
-import model.Paiment;
-import model.TypeAgent;
-import model.TypePaiment;
+import model.*;
 import repository.AgentRepositoryImpl;
 import repository.DepartementRepository;
 import service.interfaces.IAgentService;
@@ -23,18 +20,34 @@ public class AgentServiceImpl implements IAgentService {
     }
 
 
-
     @Override
-    public void creerAgent(String nom, String prenom, String email, String motDePasse, TypeAgent typeAgent, String departementId) {
+    public void creerAgent(String nom, String prenom, String email, String motDePasse,
+                           TypeAgent typeAgent, String departementId) {
 
         long timestamp = System.currentTimeMillis();
         String randomPart = UUID.randomUUID().toString().substring(0, 6);
         String agentId = "AG" + timestamp + "-" + randomPart;
 
-        Agent agent = new Agent(agentId, nom, prenom, email, motDePasse, typeAgent, null);
+        Departement departement = null;
+        if (departementId != null && !departementId.trim().isEmpty()) {
+            departement = departementRepository.findById(departementId)
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Département introuvable avec ID: " + departementId
+                    ));
+        }
+
+        Agent agent = new Agent(agentId, nom, prenom, email, motDePasse, typeAgent, departement);
 
         agentRepository.save(agent);
+
+        if (departement != null) {
+            System.out.println("Agent " + agent.getNomComplet() +
+                    " créé et affecté au département " + departement.getNom());
+        } else {
+            System.out.println("Agent " + agent.getNomComplet() + " créé sans département");
+        }
     }
+
 
     @Override
     public void modifierAgent(String agentId, String nom, String prenom, String email) {
